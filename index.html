@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECNU Campus Pet</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--gold:#f3cf7a;--gold2:#d8ad47;--blue:#b8ddf2;--blue2:#4a96c5;--cream:#efe3bf;--paper:#f8f1df;--white:#fff;--line:#e5d7ad;--ink:#21190d;--muted:#8c7c55;--red:#c95858;--shadow:0 8px 24px rgba(120,88,36,.14)}
+body{min-height:100vh;background:#ded3b8;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans SC","PingFang SC",sans-serif;display:flex;justify-content:center;color:var(--ink)}
+button,input{font:inherit}
+button{cursor:pointer}
+.phone{width:390px;min-height:100vh;background:#fff;position:relative;overflow:hidden;box-shadow:0 0 42px rgba(0,0,0,.18);display:flex;flex-direction:column}
+.hidden{display:none!important}
+.emoji{display:inline-block;line-height:1}
+.login-screen,.onboard-screen{min-height:100vh;padding:30px 24px;background:linear-gradient(150deg,#fff8df,#eef8fd);display:flex;flex-direction:column;justify-content:center;text-align:center}
+.onboard-screen{display:none;background:var(--paper)}
+.onboard-screen.show{display:flex}
+.logo{width:82px;height:82px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e6ba47);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:32px;font-weight:900;color:#fff;border:3px solid #fff;box-shadow:var(--shadow)}
+.login-title,.onboard-title{font-family:Georgia,serif;font-size:23px;font-weight:800}
+.login-sub,.onboard-sub{font-size:12px;color:var(--muted);margin:5px 0 24px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
+.field{margin-bottom:14px;text-align:left}
+.label{display:block;font-size:12px;font-weight:800;color:#5f4f2f;margin-bottom:6px}
+.input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;outline:none;background:#fff;color:var(--ink)}
+.input:focus{border-color:var(--gold2)}
+.btn-main,.login-btn,.onboard-btn{border:0;border-radius:24px;background:linear-gradient(135deg,var(--gold),#e4b943);color:var(--ink);font-weight:900;padding:12px 18px;box-shadow:var(--shadow);border-bottom:3px solid var(--gold2)}
+.login-btn,.onboard-btn{width:100%;margin-top:6px}
+.btn-main.end{background:var(--blue);color:#276f9b;border-bottom-color:var(--blue2)}
+.err{font-size:12px;color:var(--red);text-align:left;margin-top:8px;display:none}
+.dots{display:flex;gap:7px;justify-content:center;margin-bottom:18px}
+.dot{width:7px;height:7px;border-radius:50%;background:#dfd3b9}.dot.active{background:var(--gold2);width:20px;border-radius:8px}
+.avatar-preview{width:94px;height:94px;border-radius:50%;border:3px solid var(--gold2);background:#fff9e8;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:var(--muted);overflow:hidden;box-shadow:var(--shadow)}
+.avatar-img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.avatar-upload{border:1.5px dashed var(--line);border-radius:15px;background:#fff;padding:12px;margin:0 0 22px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}
+.avatar-upload span{font-size:12px;color:var(--muted);line-height:1.5}.avatar-upload label{background:var(--blue);color:#2875a1;border-radius:18px;padding:8px 12px;font-size:12px;font-weight:900;white-space:nowrap}.avatar-upload input{display:none}
+.main-app{display:none;min-height:100vh;flex-direction:column}.main-app.show{display:flex}
+.header{height:60px;background:linear-gradient(135deg,var(--gold),#e4b943);display:flex;align-items:center;gap:10px;justify-content:space-between;padding:12px 16px;flex-shrink:0}
+.hdr-avatar,.pet-avatar,.profile-avatar{width:38px;height:38px;border-radius:50%;border:2px solid #fff;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:900}
+.header-title{font-family:Georgia,serif;font-size:17px;font-weight:800}.header-sub{font-size:10px;color:#6b572d}.coin-pill{background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.7);border-radius:18px;padding:5px 10px;font-weight:900;color:#9b7320;font-size:13px}
+.pet-bar{background:#fff9e8;border-bottom:1.5px solid var(--line);display:flex;align-items:center;gap:12px;padding:10px 14px;flex-shrink:0}.pet-avatar{width:54px;height:54px;border:2.5px solid var(--gold2);position:relative}.pet-name{font-family:Georgia,serif;font-size:16px;color:#b38320;font-weight:800}.pet-mood{font-size:11px;color:var(--muted);margin-top:2px}.stat-col{margin-left:auto;display:flex;flex-direction:column;gap:4px;min-width:86px}.stat{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}.track{height:5px;background:#e8ddc4;border-radius:5px;flex:1;overflow:hidden}.fill{height:100%;border-radius:5px}
+.nav{display:flex;background:#fff;border-bottom:2px solid var(--line);flex-shrink:0}.nav-tab{flex:1;padding:8px 2px 7px;border:0;background:#fff;color:var(--muted);font-size:9px;font-weight:900;border-bottom:3px solid transparent}.nav-tab span{display:block;font-size:15px;margin-bottom:2px}.nav-tab.active{color:#b38320;border-bottom-color:var(--blue)}
+.panel{display:none;flex:1;overflow:auto;background:#fbf7ec}.panel.active{display:block}
+.map-wrap{margin:10px;border:2px solid var(--line);border-radius:14px;background:var(--cream);overflow:hidden;box-shadow:var(--shadow)}.map-wrap svg{display:block;width:100%;height:auto}.place-label{font-size:13px;font-weight:900;fill:#21190d;paint-order:stroke;stroke:var(--cream);stroke-width:4px}.map-img{filter:drop-shadow(0 2px 1px rgba(70,50,20,.18))}.map-target{cursor:pointer}.ecnu-word{font-family:"Comic Sans MS","Marker Felt",cursive;font-size:38px;font-weight:900;fill:#866b34;opacity:.38}
+.checkin-row{margin:0 10px 10px;padding:11px 12px;background:#fff;border:1.5px solid var(--line);border-radius:14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}.ci-icon{font-size:26px}.ci-name{font-size:14px;font-weight:900}.ci-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.sheet-overlay,.modal-overlay,.edit-overlay,.course-modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.34);display:none;align-items:flex-end;justify-content:center}.sheet-overlay.show,.modal-overlay.show,.edit-overlay.show,.course-modal-overlay.show{display:flex}.sheet{width:390px;max-height:72vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding-bottom:22px}.handle{width:40px;height:4px;border-radius:5px;background:#e2d6be;margin:12px auto 8px}.sheet-title{font-family:Georgia,serif;font-size:17px;color:#b38320;font-weight:800;padding:0 18px 10px;border-bottom:1px solid var(--line)}.sheet-item{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid #f1eadc;cursor:pointer}.sheet-ico{font-size:22px;width:30px;text-align:center}.sheet-name{font-size:14px;font-weight:900}.sheet-sub{font-size:10px;color:var(--muted);margin-top:1px}.sheet-arr{margin-left:auto;color:var(--muted)}
+.cat-panel,.areas-panel,.rewards-panel,.schedule-panel,.report-panel,.profile-panel{padding:12px}.cat-stage{background:linear-gradient(150deg,#fff8df,#eef8fd);border:1.5px solid var(--line);border-radius:16px;text-align:center;padding:20px 16px;margin-bottom:12px;box-shadow:var(--shadow);position:relative}.cat-avatar-wrap{width:150px;height:150px;margin:0 auto 8px;position:relative;display:flex;align-items:center;justify-content:center}.cat-main-img{max-width:150px;max-height:150px;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(80,58,30,.12))}.pet-cat-img{width:46px;height:46px;object-fit:contain}.cat-name-big{font-family:Georgia,serif;font-size:19px;color:#b38320;font-weight:800}.cat-status{font-size:11px;color:var(--muted);margin:3px 0 11px}.mood-pills{display:flex;justify-content:center;gap:8px}.mood-pill{background:#fff;border:1px solid var(--line);border-radius:16px;padding:4px 9px;font-size:11px;color:var(--muted);font-weight:800}.cat-tabs{display:flex;border:1.5px solid var(--line);border-radius:13px;overflow:hidden;background:#fff;margin-bottom:10px}.cat-tab{flex:1;border:0;background:#fff;padding:9px 4px;font-size:12px;font-weight:900;color:var(--muted)}.cat-tab.active{background:#fff8df;color:#b38320;border-bottom:3px solid var(--gold)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.shop-item{background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:9px 5px;text-align:center;box-shadow:var(--shadow);min-height:112px}.shop-item.equipped{background:#eef8fd;border-color:var(--blue2)}.shop-img{width:58px;height:58px;object-fit:contain;margin:0 auto 4px;display:block}.shop-name{font-size:10px;font-weight:900}.shop-cost{font-size:9px;color:#b38320;font-weight:900;margin-top:2px}.section-title{font-family:Georgia,serif;font-size:14px;color:#b38320;font-weight:800;margin:0 0 8px 2px}
+.area-card,.reward-card,.schedule-item,.profile-section{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);margin-bottom:9px}.area-card{display:flex;align-items:center;gap:12px;cursor:default}.area-card.active{background:#eef8fd;border-color:var(--blue2)}.area-ico{font-size:25px;width:35px;text-align:center}.area-name{font-weight:900;font-size:14px}.area-desc{font-size:11px;color:var(--muted);margin-top:2px}.bar{height:5px;background:#eadfc6;border-radius:5px;margin-top:6px;overflow:hidden}.bar div{height:100%;background:var(--gold2);border-radius:5px}.area-stat{text-align:right;min-width:50px}.area-stat b{font-size:15px;color:#b38320}.area-stat span{display:block;font-size:10px;color:var(--muted)}
+.coins-hero{background:linear-gradient(135deg,var(--gold),#e4b943);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)}.coins-num{font-family:Georgia,serif;font-size:34px;font-weight:900}.coins-today{margin-left:auto;background:rgba(255,255,255,.58);border-radius:12px;padding:5px 10px;font-size:12px;font-weight:900;color:#9b7320}.reward-card{display:flex;gap:10px;align-items:center}.reward-ico{font-size:24px;width:34px;text-align:center}.reward-name{font-size:13px;font-weight:900}.reward-desc{font-size:11px;color:var(--muted);margin-top:2px}.reward-status{margin-left:auto;font-size:20px}
+.calendar-card{background:#fff;border:1.5px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:10px}.cal-head{background:linear-gradient(135deg,var(--gold),#e4b943);padding:12px 14px;display:flex;justify-content:space-between;align-items:center}.cal-title{font-family:Georgia,serif;font-size:17px;font-weight:900}.cal-sub{font-size:12px;color:#6b572d}.cal-week,.cal-days{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}.cal-week div{font-size:10px;font-weight:900;color:var(--muted);padding:8px 0 4px}.cal-days div{font-size:11px;padding:7px 0;color:#5f4f2f}.cal-days .today{width:26px;margin:0 auto;border-radius:50%;background:var(--blue);color:#276f9b;font-weight:900}.schedule-add{display:flex;gap:8px;margin-bottom:10px}.schedule-input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:13px;padding:11px;background:#fff;outline:none}.schedule-add button{border:0;border-radius:13px;background:var(--gold);font-weight:900;padding:0 13px;border-bottom:3px solid var(--gold2)}.schedule-item{display:flex;align-items:center;gap:10px}.schedule-check{width:23px;height:23px;border-radius:50%;border:2px solid var(--blue2);background:#fff;color:#276f9b;font-weight:900}.schedule-item.done .schedule-check{background:var(--blue)}.schedule-item.done .schedule-text{text-decoration:line-through;color:var(--muted)}.schedule-text{flex:1;font-size:13px;font-weight:800}.schedule-del{border:0;background:transparent;color:var(--red);font-size:18px}.empty{text-align:center;color:var(--muted);font-size:12px;padding:22px}.course-entry{width:100%;border:1.5px solid var(--line);border-radius:14px;background:#fff;padding:13px 14px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-weight:900;margin-top:10px}
+.course-page{display:none;position:absolute;inset:0;background:#fbf7ec;z-index:30;padding:12px;overflow:auto}.course-page.show{display:block}.course-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}.back-btn{border:1.5px solid var(--line);background:#fff;border-radius:18px;padding:8px 12px;color:#b38320;font-weight:900}.course-title{font-family:Georgia,serif;color:#b38320;font-size:17px;font-weight:900}.course-wrap{overflow:auto;background:#fff;border:1.5px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.course-table{border-collapse:separate;border-spacing:0;min-width:760px;width:100%;font-size:11px}.course-table th,.course-table td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px;vertical-align:top}.course-table th{background:#fff8df;color:#b38320;position:sticky;top:0;z-index:1}.course-table th:first-child,.course-table td:first-child{position:sticky;left:0;background:#fffdf8;text-align:center;font-weight:900;color:var(--muted);z-index:2;width:46px}.course-cell{min-height:54px;border-radius:8px;color:var(--muted);cursor:pointer}.course-cell.filled{background:#eef8fd;border:1px solid var(--blue2);padding:6px;color:var(--ink)}.course-cell-name{font-weight:900}.course-cell-meta{font-size:9px;color:var(--muted);margin-top:2px}
+.report-card{background:#fff;border:1.5px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:10px}.report-head{background:linear-gradient(135deg,var(--gold),#e4b943);padding:12px 14px;font-family:Georgia,serif;font-weight:900}.report-body{padding:12px 14px}.report-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f1eadc}.report-row:last-child{border-bottom:0}.report-val{margin-left:auto;font-weight:900;color:#b38320}.profile-hero{background:linear-gradient(150deg,#fff8df,#eef8fd);border:1.5px solid var(--line);border-radius:16px;text-align:center;padding:22px;margin-bottom:12px;box-shadow:var(--shadow)}.profile-avatar{width:86px;height:86px;margin:0 auto 10px;border:3px solid var(--gold2)}.profile-name{font-family:Georgia,serif;font-size:19px;font-weight:900}.profile-id{font-size:12px;color:var(--muted);margin-top:2px}.mini-btn{border:1.5px solid var(--gold2);background:#fff;border-radius:18px;padding:7px 14px;color:#b38320;font-weight:900;margin-top:10px}.profile-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1eadc;font-size:13px}.profile-row:last-child{border-bottom:0}.logout{width:100%;border:1.5px solid #e7b2b2;background:#fff;border-radius:20px;padding:11px;color:var(--red);font-weight:900}
+.modal-overlay,.edit-overlay,.course-modal-overlay{align-items:center}.modal,.edit-box,.course-modal{width:324px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden}.modal-top{background:linear-gradient(135deg,var(--gold),#e4b943);text-align:center;padding:20px}.modal-icon{font-size:42px}.modal-title{font-family:Georgia,serif;font-size:20px;font-weight:900;margin-top:5px}.modal-body,.edit-box,.course-modal{padding:18px}.modal-msg{text-align:center;white-space:pre-line;color:var(--muted);font-size:13px;line-height:1.6}.modal-coins{text-align:center;color:#b38320;font-weight:900;margin-top:8px}.modal-actions{display:flex;gap:10px;margin-top:16px}.modal-actions button,.edit-actions button,.course-actions button{flex:1;border:0;border-radius:20px;padding:11px;font-weight:900}.save{background:var(--gold);border-bottom:3px solid var(--gold2)!important}.cancel{background:#eee6d6;color:var(--muted);border-bottom:3px solid #d8ccb4!important}.danger{background:#fff0f0!important;color:var(--red)!important}
+.edit-title,.course-modal-title{text-align:center;font-family:Georgia,serif;font-size:18px;font-weight:900;margin-bottom:14px}.edit-actions,.course-actions{display:flex;gap:10px;margin-top:8px}
+.checkin-page{position:fixed;inset:0;background:#eee7d7;z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column;padding:22px}.checkin-page.show{display:flex}.checkin-gif{width:min(86vw,330px);border-radius:18px;box-shadow:0 16px 48px rgba(0,0,0,.18)}.checkin-title{font-family:Georgia,serif;font-size:23px;font-weight:900;margin-top:18px}.checkin-sub{font-size:13px;color:var(--muted);margin:6px 0 18px;text-align:center}.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(16px);background:rgba(33,25,13,.88);color:#fff;padding:9px 14px;border-radius:20px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:500}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="login-screen" id="loginScreen">
+    <div class="logo">E</div>
+    <div class="login-title">ECNU Campus Pet</div>
+    <div class="login-sub">和你的小猫一起打卡校园生活</div>
+    <div class="card">
+      <div class="field"><label class="label">学号</label><input class="input" id="loginSid" placeholder="请输入学号" inputmode="numeric"></div>
+      <div class="field"><label class="label">密码</label><input class="input" id="loginPwd" type="password" placeholder="请输入密码"></div>
+      <button class="login-btn" onclick="doLogin()">登录</button>
+      <div class="err" id="loginErr"></div>
+    </div>
+  </div>
+
+  <div class="onboard-screen" id="onboardScreen">
+    <div class="dots"><span class="dot active" id="dot1"></span><span class="dot" id="dot2"></span></div>
+    <div id="step1">
+      <div class="onboard-title">给你的小猫起名</div>
+      <div class="onboard-sub">它会陪你去图书馆、食堂和操场</div>
+      <div class="avatar-preview">🐱</div>
+      <input class="input" id="catNameInput" placeholder="例如：拿铁">
+      <button class="onboard-btn" onclick="goStep2()">下一步</button>
+    </div>
+    <div id="step2" class="hidden">
+      <div class="onboard-title">上传你的头像照片</div>
+      <div class="avatar-preview" id="avatarPreview">上传</div>
+      <div class="avatar-upload"><span>选择一张照片作为你的校园形象</span><label>选择照片<input type="file" accept="image/*" onchange="handleAvatarUpload(this,'avatarPreview')"></label></div>
+      <button class="onboard-btn" onclick="finishOnboarding()">完成，开始探索校园</button>
+    </div>
+  </div>
+
+  <div class="main-app" id="mainApp">
+    <div class="header">
+      <div class="hdr-avatar" id="hdrAvatar">上传</div>
+      <div style="flex:1"><div class="header-title">ECNU Campus Pet</div><div class="header-sub">校园宠物打卡</div></div>
+      <div class="coin-pill">🪙 <span id="hdrCoins">240</span></div><div>🔔</div>
+    </div>
+    <div class="pet-bar">
+      <div class="pet-avatar" id="petAvatar">🐱</div>
+      <div><div class="pet-name" id="petNameDisp">小猫</div><div class="pet-mood" id="petMood">在等待新的冒险…</div></div>
+      <div class="stat-col">
+        <div class="stat">❤️<div class="track"><div class="fill" id="hpF" style="background:#f08a8a;width:80%"></div></div></div>
+        <div class="stat">⭐<div class="track"><div class="fill" id="xpF" style="background:var(--gold2);width:45%"></div></div></div>
+        <div class="stat">😸<div class="track"><div class="fill" id="joyF" style="background:var(--blue2);width:65%"></div></div></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-tab active" onclick="switchTab('map')"><span>🗺️</span>地图</button>
+      <button class="nav-tab" onclick="switchTab('cat')"><span>🐱</span>宠物</button>
+      <button class="nav-tab" onclick="switchTab('areas')"><span>📍</span>打卡</button>
+      <button class="nav-tab" onclick="switchTab('rewards')"><span>🎁</span>奖励</button>
+      <button class="nav-tab" onclick="switchTab('schedule')"><span>📅</span>日程</button>
+      <button class="nav-tab" onclick="switchTab('report')"><span>📊</span>报告</button>
+      <button class="nav-tab" onclick="switchTab('me')"><span>👤</span>我的</button>
+    </div>
+
+    <div class="panel active" id="panel-map">
+      <div class="map-wrap">
+        <svg viewBox="0 0 370 310" aria-label="校园地图">
+          <rect width="370" height="310" fill="#efe3bf"/>
+          <text x="185" y="165" text-anchor="middle" class="ecnu-word">ECNU</text>
+          <g class="map-target" onclick="selectZone('lib')"><image href="assets/map-icons/library.png" x="48" y="35" width="58" height="58" class="map-img"/><text x="77" y="101" text-anchor="middle" class="place-label">图书馆</text></g>
+          <g class="map-target" onclick="selectZone('dorm')"><image href="assets/map-icons/dorm.png" x="158" y="38" width="58" height="58" class="map-img"/><text x="186" y="101" text-anchor="middle" class="place-label">宿舍</text></g>
+          <g class="map-target" onclick="selectZone('class')"><image href="assets/map-icons/classroom.png" x="273" y="43" width="58" height="58" class="map-img"/><text x="301" y="120" text-anchor="middle" class="place-label">教学楼</text></g>
+          <g class="map-target" onclick="selectZone('sport')"><image href="assets/map-icons/sport.png" x="50" y="197" width="78" height="50" class="map-img"/><text x="88" y="264" text-anchor="middle" class="place-label">操场</text></g>
+          <g class="map-target" onclick="selectZone('canteen')"><image href="assets/map-icons/canteen.png" x="241" y="192" width="62" height="62" class="map-img"/><text x="273" y="265" text-anchor="middle" class="place-label">食堂</text></g>
+          <rect id="selRing" x="0" y="0" width="0" height="0" rx="18" fill="none" stroke="#4a96c5" stroke-width="3" stroke-dasharray="8 5" opacity="0"/>
+          <g id="petG" style="transition:transform .45s ease;transform:translate(186px,63px)"><image href="assets/custom/cat-happy.png" x="-30" y="-38" width="60" height="76"/></g>
+        </svg>
+      </div>
+      <div class="checkin-row">
+        <div class="ci-icon" id="ciIcon">📍</div>
+        <div style="flex:1"><div class="ci-name" id="ciName">选择一个地点</div><div class="ci-sub" id="ciSub">点击地图上的图标开始打卡</div></div>
+        <button class="btn-main" id="ciBtn" onclick="doCheckin()">打卡</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-cat">
+      <div class="cat-panel">
+        <div class="cat-stage">
+          <div id="catBig" class="cat-avatar-wrap">🐱</div>
+          <div class="cat-name-big" id="catStageName">小猫</div>
+          <div class="cat-status" id="catStatusTxt">心情：开心 | 饱腹：满足</div>
+          <div class="mood-pills"><div class="mood-pill">❤️ <span id="catHpNum">80</span></div><div class="mood-pill">⭐ <span id="catXpNum">45</span></div><div class="mood-pill">😸 <span id="catJoyNum">65</span></div></div>
+        </div>
+        <div class="cat-tabs"><button class="cat-tab active" onclick="switchCatTab('outfit')">👗 换装</button><button class="cat-tab" onclick="switchCatTab('feed')">🍽 投喂</button><button class="cat-tab" onclick="switchCatTab('play')">🧶 玩耍</button></div>
+        <div id="catOutfitPanel"><div class="section-title">装扮</div><div class="grid3" id="outfitGrid"></div></div>
+        <div id="catFeedPanel" class="hidden"><div class="section-title">投喂</div><div class="grid4" id="foodGrid"></div></div>
+        <div id="catPlayPanel" class="hidden"><div class="section-title">玩耍</div><div class="grid3" id="toyGrid"></div></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-areas"><div class="areas-panel" id="areasList"></div></div>
+    <div class="panel" id="panel-rewards"><div class="rewards-panel"><div class="coins-hero"><div style="font-size:32px">🪙</div><div><div class="coins-num" id="coinsHero">240</div><div style="font-size:12px">校园金币</div></div><div class="coins-today" id="todayCoinsHero">+0 今日</div></div><div id="rewardList"></div></div></div>
+    <div class="panel" id="panel-schedule">
+      <div class="schedule-panel">
+        <div class="calendar-card"><div class="cal-head"><div><div class="cal-title" id="calendarTitle">2026年6月</div><div class="cal-sub" id="calendarSub">今天</div></div><div style="font-size:26px">📅</div></div><div class="cal-week"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div><div class="cal-days" id="calendarDays"></div></div>
+        <div class="schedule-add"><input class="schedule-input" id="scheduleInput" placeholder="添加待完成事项" maxlength="40"><button onclick="addScheduleItem()">添加</button></div>
+        <div id="scheduleList"></div>
+        <button class="course-entry" onclick="openCoursePage()"><span>📚</span><span>我的课表</span></button>
+        <div class="course-page" id="coursePage"><div class="course-head"><button class="back-btn" onclick="closeCoursePage()">返回</button><div class="course-title">我的课表</div></div><div class="course-wrap"><table class="course-table" id="courseTable"></table></div></div>
+      </div>
+    </div>
+    <div class="panel" id="panel-report"><div class="report-panel"><button class="btn-main" style="width:100%;margin-bottom:12px" onclick="generateReport()">✨ 生成今日生活报告</button><div id="reportContent" class="empty">📊 今日还没有生成报告</div></div></div>
+    <div class="panel" id="panel-me"><div class="profile-panel"><div class="profile-hero"><div class="profile-avatar" id="profileAvatar">上传</div><div class="profile-name" id="profileName">用户</div><div class="profile-id" id="profileSid">学号：</div><button class="mini-btn" onclick="openEditProfile()">✏️ 编辑资料</button></div><div class="profile-section"><div class="section-title">📋 账户信息</div><div class="profile-row"><span>昵称</span><b id="meName"></b></div><div class="profile-row"><span>小猫名字</span><b id="meCatName"></b></div><div class="profile-row"><span>金币</span><b>🪙 <span id="meCoins">240</span></b></div><div class="profile-row"><span>等级</span><b id="meLevel">Lv.3</b></div></div><button class="logout" onclick="doLogout()">退出登录</button></div></div>
+  </div>
+
+  <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet(event)"><div class="sheet"><div class="handle"></div><div class="sheet-title" id="sheetTitle"></div><div id="sheetItems"></div></div></div>
+  <div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="modal-top"><div class="modal-icon" id="modalIcon">🐱</div><div class="modal-title" id="modalTitle">提示</div></div><div class="modal-body"><div class="modal-msg" id="modalMsg"></div><div class="modal-coins" id="modalCoins"></div><div class="modal-actions"><button class="save" onclick="closeModal()">我知道了</button></div></div></div></div>
+  <div class="edit-overlay" id="editOverlay"><div class="edit-box"><div class="edit-title">编辑资料</div><div class="avatar-preview" id="editAvatarPreview">上传</div><div class="avatar-upload"><span>更换自己的头像照片</span><label>选择照片<input type="file" accept="image/*" onchange="handleAvatarUpload(this,'editAvatarPreview')"></label></div><label class="label">昵称</label><input class="input" id="editNameInput"><label class="label">小猫名字</label><input class="input" id="editCatNameInput"><div class="edit-actions"><button class="cancel" onclick="closeEditProfile()">取消</button><button class="save" onclick="saveProfile()">保存</button></div></div></div>
+  <div class="course-modal-overlay" id="courseModalOverlay"><div class="course-modal"><div class="course-modal-title" id="courseModalTitle">添加课程</div><input class="input" id="courseNameInput" placeholder="课程名称"><input class="input" id="coursePlaceInput" placeholder="地点"><input class="input" id="courseNoteInput" placeholder="备注，可不填"><div class="course-actions"><button class="danger" id="courseDeleteBtn" onclick="deleteEditingCourse()">删除</button><button class="cancel" onclick="closeCourseModal()">取消</button><button class="save" onclick="saveCourse()">保存</button></div></div></div>
+  <div class="checkin-page" id="checkinPage"><img class="checkin-gif" id="checkinGif" alt="打卡动画"><div class="checkin-title" id="checkinTitle">打卡中</div><div class="checkin-sub" id="checkinSub"></div><button class="btn-main end" onclick="exitCheckinScene()">退出页面并结束打卡</button></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const ICON={lib:'📚',class:'🎓',sport:'⚽',canteen:'🍜',dorm:'🏠',cat:'🐱',reward:'🎁',pin:'📍',coin:'🪙',report:'📊',hp:'❤️',joy:'😸',bow:'🎀'};
+const ZONES={
+  lib:{name:'图书馆',sub:'Library',icon:'📚',mood:'学霸模式',xp:15,coins:12,pos:{x:78,y:70},hasSub:true},
+  class:{name:'教学楼',sub:'Teaching',icon:'🎓',mood:'上课模式',xp:12,coins:8,pos:{x:301,y:73},hasSub:false},
+  sport:{name:'操场',sub:'Playground',icon:'⚽',mood:'运动模式',xp:12,coins:8,pos:{x:88,y:225},hasSub:false},
+  canteen:{name:'食堂',sub:'Canteen',icon:'🍜',mood:'吃货模式',xp:8,coins:5,pos:{x:273,y:222},hasSub:true},
+  dorm:{name:'宿舍',sub:'Dormitory',icon:'🏠',mood:'躺平模式',xp:5,coins:3,pos:{x:186,y:63},hasSub:false}
+};
+const RECTS={lib:[31,31,92,76],class:[260,34,82,96],sport:[30,188,116,82],canteen:[218,184,110,88],dorm:[143,34,86,70]};
+const SUBS={lib:[['lib_zb','中北校区图书馆','Zhongbei Library','📚'],['lib_mh','闵行校区图书馆','Minhang Library','🏛️']],canteen:[['ct_pthx','普陀河西食堂','Putuo Hexi Canteen','🍜'],['ct_pthd','普陀河东食堂','Putuo Hedong Canteen','🍜'],['ct_xy','夏雨厅','Xiayu Hall','🍜'],['ct_dr','冬日厅','Dongri Hall','🍜'],['ct_dy','冬月厅','Dongyue Hall','🍜'],['ct_qs','秋实阁','Qiushi Pavilion','🍜'],['ct_ql','秋林阁','Qiulin Pavilion','🍜']]};
+const SCENES={dorm:['assets/checkin-scenes/dorm.png','宿舍打卡中','小猫正在宿舍休息。'],sport:['assets/checkin-scenes/sport.png','操场打卡中','小猫正在操场活动。'],lib:['assets/checkin-scenes/study.png','图书馆打卡中','小猫正在认真学习。'],class:['assets/checkin-scenes/study.png','教学楼打卡中','小猫正在认真上课。'],canteen:['assets/checkin-scenes/canteen.png','食堂打卡中','小猫正在食堂用餐。']};
+const CAT_IMAGES={happy:'assets/custom/cat-happy.png',unhappy:'assets/custom/cat-unhappy.png',scarf:'assets/custom/cat-scarf.png',wings:'assets/custom/cat-wings.png',bow:'assets/custom/cat-bow.png',cap:'assets/custom/cat-cap.png',glasses:'assets/custom/cat-glasses.png'};
+const OUTFITS=[
+  ['scarf','红围巾','assets/custom/outfit-scarf.png',CAT_IMAGES.scarf,50],
+  ['wings','蝴蝶翅膀','assets/custom/outfit-wings.png',CAT_IMAGES.wings,80],
+  ['bow','蝴蝶结','assets/custom/outfit-bow.png',CAT_IMAGES.bow,40],
+  ['cap','学士帽','assets/custom/outfit-cap.png',CAT_IMAGES.cap,80],
+  ['glasses','眼镜','assets/custom/outfit-glasses.png',CAT_IMAGES.glasses,60]
+];
+const FOODS=[
+  ['grass','猫草','assets/custom/food-grass.png',12,10,'开心'],
+  ['stick','猫条','assets/custom/food-stick.png',24,18,'开心'],
+  ['can','猫罐头','assets/custom/food-can.png',28,22,'开心'],
+  ['fish','小鱼干','assets/custom/food-fish.png',20,15,'开心']
+];
+const TOYS=[
+  ['yarn','毛线球','assets/custom/toy-yarn.png',16,15,'开心'],
+  ['teaser','逗猫棒','assets/custom/toy-teaser.png',18,18,'开心'],
+  ['scratch','猫抓板','assets/custom/toy-scratch.png',20,16,'开心']
+];
+const REWARDS=[['学霸皮肤','🎓','图书馆累计3小时','lib',180,'min'],['运动健将','🏆','操场累计2小时','sport',120,'min'],['吃货王冠','👑','食堂打卡5次','canteen',5,'visits'],['宿舍毛毯','🛋️','宿舍休息累计1小时','dorm',60,'min'],['校园探索家','🗺️','解锁全部5个区域',null,5,'zones']];
+let U={loggedIn:false,sid:'',nickname:'',avatar:'',catName:''}, tempAvatar='';
+let S={sel:null,selSub:null,selSubName:'',coins:240,dayCoins:0,xp:45,level:3,hp:80,joy:65,active:false,activeZone:null,startTime:0,times:{lib:0,class:0,sport:0,canteen:0,dorm:0},visits:{lib:0,class:0,sport:0,canteen:0,dorm:0},visited:new Set(),log:[],equipped:'',catMood:'开心',catFull:'满足',lastInteract:Date.now(),schedule:[],courses:Array.from({length:14},()=>Array(7).fill(null)),editingSlot:null,editingDay:null};
+function $(id){return document.getElementById(id)}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function isImg(v){return typeof v==='string'&&v.startsWith('data:image/')}
+function setAvatar(id,val){const el=typeof id==='string'?$(id):id;if(!el)return;el.innerHTML=isImg(val)?`<img class="avatar-img" src="${val}" alt="头像">`:(val||'上传')}
+function handleAvatarUpload(input,previewId){const file=input.files&&input.files[0];if(!file)return;if(!file.type.startsWith('image/')){toast('请选择图片文件');return}const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const size=420,c=document.createElement('canvas'),ctx=c.getContext('2d'),side=Math.min(img.width,img.height);c.width=size;c.height=size;ctx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,size,size);tempAvatar=c.toDataURL('image/jpeg',.86);setAvatar(previewId,tempAvatar);toast('照片已添加')};img.src=r.result};r.readAsDataURL(file);input.value=''}
+function doLogin(){const sid=$('loginSid').value.trim(),pwd=$('loginPwd').value.trim(),err=$('loginErr');if(!sid||!pwd){err.style.display='block';err.textContent='请输入学号和密码';return}if(!/^\d{6,12}$/.test(sid)){err.style.display='block';err.textContent='学号格式不正确';return}err.style.display='none';U.sid=sid;U.nickname=sid;tempAvatar='';setAvatar('avatarPreview','上传');$('loginScreen').style.display='none';$('onboardScreen').classList.add('show')}
+function goStep2(){const n=$('catNameInput').value.trim();if(!n){toast('请给小猫起个名字');return}U.catName=n;$('step1').classList.add('hidden');$('step2').classList.remove('hidden');$('dot1').classList.remove('active');$('dot2').classList.add('active')}
+function finishOnboarding(){if(!isImg(tempAvatar)){toast('请先上传一张自己的照片');return}U.avatar=tempAvatar;U.loggedIn=true;touchCat();$('onboardScreen').classList.remove('show');$('mainApp').classList.add('show');syncUser();updateUI();renderCat();renderCalendar();toast('欢迎来到 ECNU 校园，'+U.nickname+'！')}
+function syncUser(){setAvatar('hdrAvatar',U.avatar);renderPetThumb();setAvatar('profileAvatar',U.avatar);$('petNameDisp').textContent=U.catName;$('catStageName').textContent=U.catName;$('profileName').textContent=U.nickname;$('profileSid').textContent='学号：'+U.sid;$('meName').textContent=U.nickname;$('meCatName').textContent=U.catName}
+function switchTab(t){['map','cat','areas','rewards','schedule','report','me'].forEach((n,i)=>{$('panel-'+n).classList.toggle('active',n===t);document.querySelectorAll('.nav-tab')[i].classList.toggle('active',n===t)});if(t==='cat')renderCat();if(t==='areas')renderAreas();if(t==='rewards')renderRewards();if(t==='schedule')renderSchedule();if(t==='me'){syncUser();$('meCoins').textContent=S.coins;$('meLevel').textContent='Lv.'+S.level}}
+function selectZone(zid,subName){if(ZONES[zid].hasSub&&!subName){openSheet(zid);return}S.sel=zid;S.selSubName=subName||'';const z=ZONES[zid],r=RECTS[zid];$('ciIcon').textContent=z.icon;$('ciName').textContent=subName||z.name;$('ciSub').textContent=S.active&&S.activeZone===zid?'打卡进行中… 点击结束':'已选定，点击开始打卡';$('ciBtn').textContent=S.active&&S.activeZone===zid?'结束':'打卡';$('ciBtn').className='btn-main'+(S.active&&S.activeZone===zid?' end':'');$('selRing').setAttribute('x',r[0]-4);$('selRing').setAttribute('y',r[1]-4);$('selRing').setAttribute('width',r[2]+8);$('selRing').setAttribute('height',r[3]+8);$('selRing').setAttribute('opacity','1')}
+function openSheet(zid){$('sheetTitle').textContent=ZONES[zid].name+' · 选择具体地点';$('sheetItems').innerHTML=SUBS[zid].map(i=>`<div class="sheet-item" onclick="selectSub('${zid}','${i[0]}','${i[1]}')"><div class="sheet-ico">${i[3]}</div><div><div class="sheet-name">${i[1]}</div><div class="sheet-sub">${i[2]}</div></div><div class="sheet-arr">›</div></div>`).join('');$('sheetOverlay').classList.add('show')}
+function closeSheet(e){if(!e||e.target===$('sheetOverlay'))$('sheetOverlay').classList.remove('show')}
+function selectSub(zid,id,name){S.selSub=id;closeSheet();selectZone(zid,name)}
+function doCheckin(){if(!S.sel){toast('请先在地图上选择地点');return}if(S.active&&S.activeZone===S.sel){endCheckin();return}if(S.active)endCheckin();beginCheckin()}
+function beginCheckin(){const z=ZONES[S.sel];touchCat();S.active=true;S.activeZone=S.sel;S.startTime=Date.now();S.visits[S.sel]++;S.visited.add(S.sel);$('petMood').textContent=z.mood+(S.selSubName?' · '+S.selSubName:'');$('ciBtn').textContent='结束';$('ciBtn').className='btn-main end';$('ciSub').textContent='打卡进行中… 点击结束';movePet(S.sel);openCheckinScene(S.sel);toast('已在'+(S.selSubName||z.name)+'打卡')}
+function endCheckin(){if(!S.active)return;const zid=S.activeZone,z=ZONES[zid],mins=Math.max(1,Math.round((Date.now()-S.startTime)/60000)),c=Math.round(z.coins*mins/5),x=Math.round(z.xp*mins/5);S.times[zid]+=mins;S.coins+=c;S.dayCoins+=c;S.xp=Math.min(99,S.xp+x);S.joy=Math.min(99,S.joy+5);S.active=false;S.log.push({zone:zid,mins,coins:c,t:new Date().toLocaleTimeString('zh',{hour:'2-digit',minute:'2-digit'})});$('ciBtn').textContent='打卡';$('ciBtn').className='btn-main';$('ciSub').textContent='打卡结束，可重新选择区域';$('petMood').textContent='在等待新的冒险…';updateUI();showModal(z.icon,'打卡完成','今日在'+z.name+'活动了 '+mins+' 分钟','奖励 +'+c+' CC 金币')}
+function movePet(zid){const p=ZONES[zid].pos;$('petG').style.transform=`translate(${p.x}px,${p.y}px)`}
+function openCheckinScene(zid){const s=SCENES[zid];$('checkinGif').src=s[0];$('checkinTitle').textContent=s[1];$('checkinSub').textContent=s[2];$('checkinPage').classList.add('show')}
+function exitCheckinScene(){$('checkinPage').classList.remove('show');$('checkinGif').src='';if(S.active)endCheckin()}
+function switchCatTab(t){$('catOutfitPanel').classList.toggle('hidden',t!=='outfit');$('catFeedPanel').classList.toggle('hidden',t!=='feed');$('catPlayPanel').classList.toggle('hidden',t!=='play');document.querySelectorAll('.cat-tab').forEach((b,i)=>b.classList.toggle('active',['outfit','feed','play'][i]===t))}
+function touchCat(){S.lastInteract=Date.now();S.catMood='开心';}
+function isCatIdle(){return Date.now()-S.lastInteract>60000}
+function currentCatImage(){if(isCatIdle())return CAT_IMAGES.unhappy;const o=OUTFITS.find(x=>x[0]===S.equipped);return o?o[3]:CAT_IMAGES.happy}
+function renderPetThumb(){const el=$('petAvatar');if(el)el.innerHTML=`<img class="pet-cat-img" src="${currentCatImage()}" alt="小猫">`}
+function renderCat(){renderCatAvatar();renderPetThumb();renderOutfits();renderFoods();renderToys();$('catHpNum').textContent=S.hp;$('catXpNum').textContent=S.xp;$('catJoyNum').textContent=S.joy;$('catStatusTxt').textContent='心情：'+(isCatIdle()?'不高兴':S.catMood)+' | 饱腹：'+S.catFull}
+function renderCatAvatar(){$('catBig').innerHTML=`<img class="cat-main-img" src="${currentCatImage()}" alt="小猫">`}
+function renderOutfits(){$('outfitGrid').innerHTML=OUTFITS.map(o=>`<button class="shop-item ${S.equipped===o[0]?'equipped':''}" onclick="equipOutfit('${o[0]}')"><img class="shop-img" src="${o[2]}" alt="${o[1]}"><div class="shop-name">${o[1]}</div><div class="shop-cost">${S.equipped===o[0]?'✅ 已装扮':'CC '+o[4]}</div></button>`).join('')}
+function equipOutfit(id){const o=OUTFITS.find(x=>x[0]===id);if(!o)return;if(S.equipped!==id&&S.coins<o[4]){toast('金币不足');return}if(S.equipped!==id)S.coins-=o[4];S.equipped=id;touchCat();toast(U.catName+'穿上了'+o[1]);updateUI();renderCat()}
+function renderFoods(){$('foodGrid').innerHTML=FOODS.map(f=>`<button class="shop-item" onclick="feedCat('${f[0]}')" style="${S.coins<f[3]?'opacity:.5':''}"><img class="shop-img" src="${f[2]}" alt="${f[1]}"><div class="shop-name">${f[1]}</div><div class="shop-cost">CC ${f[3]}</div></button>`).join('')}
+function feedCat(id){const f=FOODS.find(x=>x[0]===id);if(S.coins<f[3]){toast('金币不足');return}S.coins-=f[3];S.joy=Math.min(99,S.joy+f[4]);S.hp=Math.min(99,S.hp+3);S.catMood=f[5];S.catFull='满足';touchCat();toast(U.catName+'吃了'+f[1]);updateUI();renderCat()}
+function renderToys(){$('toyGrid').innerHTML=TOYS.map(t=>`<button class="shop-item" onclick="playCat('${t[0]}')" style="${S.coins<t[3]?'opacity:.5':''}"><img class="shop-img" src="${t[2]}" alt="${t[1]}"><div class="shop-name">${t[1]}</div><div class="shop-cost">CC ${t[3]}</div></button>`).join('')}
+function playCat(id){const t=TOYS.find(x=>x[0]===id);if(S.coins<t[3]){toast('金币不足');return}S.coins-=t[3];S.joy=Math.min(99,S.joy+t[4]);S.xp=Math.min(99,S.xp+4);S.catMood=t[5];touchCat();toast(U.catName+'玩了'+t[1]);updateUI();renderCat()}
+function renderAreas(){$('areasList').innerHTML=Object.entries(ZONES).map(([id,z])=>{const mins=S.times[id],h=Math.floor(mins/60),m=mins%60,p=Math.min(100,mins/120*100);return `<div class="area-card ${S.active&&S.activeZone===id?'active':''}"><div class="area-ico">${z.icon}</div><div style="flex:1;min-width:0"><div class="area-name">${z.name} <span style="font-size:10px;color:var(--muted);font-weight:500">${z.sub}</span></div><div class="area-desc">${z.mood}</div><div class="bar"><div style="width:${p}%"></div></div></div><div class="area-stat"><b>${S.visits[id]}</b><span>次打卡</span><span>${h?h+'h ':''}${m}min</span></div></div>`}).join('')}
+function renderRewards(){$('rewardList').innerHTML=REWARDS.map(r=>{const prog=r[3]?S[r[5]==='min'?'times':'visits'][r[3]]:S.visited.size,done=prog>=r[4],pct=Math.min(100,prog/r[4]*100);return `<div class="reward-card"><div class="reward-ico">${r[1]}</div><div style="flex:1"><div class="reward-name">${r[0]}</div><div class="reward-desc">${r[2]}</div><div class="bar"><div style="width:${pct}%;background:${done?'var(--blue2)':'var(--gold2)'}"></div></div><div class="reward-desc">${prog} / ${r[4]} ${r[5]}</div></div><div class="reward-status">${done?'✅':'🔒'}</div></div>`}).join('')}
+function renderSchedule(){renderCalendar();renderCourses();$('scheduleList').innerHTML=S.schedule.length?S.schedule.map(i=>`<div class="schedule-item ${i.done?'done':''}"><button class="schedule-check" onclick="toggleTodo(${i.id})">${i.done?'✓':''}</button><div class="schedule-text">${esc(i.text)}</div><button class="schedule-del" onclick="delTodo(${i.id})">×</button></div>`).join(''):'<div class="empty">今天还没有待完成事项</div>'}
+function renderCalendar(){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),cells=[];$('calendarTitle').textContent=`${y}年${m+1}月`;$('calendarSub').textContent=`${m+1}月${n.getDate()}日`;for(let i=0;i<first;i++)cells.push('<div></div>');for(let d=1;d<=days;d++)cells.push(`<div class="${d===n.getDate()?'today':''}">${d}</div>`);$('calendarDays').innerHTML=cells.join('')}
+function addScheduleItem(){const input=$('scheduleInput'),text=input.value.trim();if(!text){toast('先写一条待完成事项吧');return}S.schedule.push({id:Date.now(),text,done:false});input.value='';renderSchedule()}
+function toggleTodo(id){const item=S.schedule.find(i=>i.id===id);if(item)item.done=!item.done;renderSchedule()}
+function delTodo(id){S.schedule=S.schedule.filter(i=>i.id!==id);renderSchedule()}
+$('scheduleInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')addScheduleItem()});
+function renderCourses(){const days=['周一','周二','周三','周四','周五','周六','周日'];$('courseTable').innerHTML=`<thead><tr><th>节次</th>${days.map(d=>`<th>${d}</th>`).join('')}</tr></thead><tbody>${S.courses.map((row,slot)=>`<tr><td>${slot+1}</td>${row.map((c,day)=>`<td><div class="course-cell ${c?'filled':''}" onclick="openCourseModal(${slot},${day})">${c?`<div class="course-cell-name">${esc(c.name)}</div><div class="course-cell-meta">${esc(c.place||'未填地点')}</div>${c.note?`<div class="course-cell-meta">${esc(c.note)}</div>`:''}`:'添加'}</div></td>`).join('')}</tr>`).join('')}</tbody>`}
+function openCoursePage(){$('coursePage').classList.add('show');renderCourses()}
+function closeCoursePage(){$('coursePage').classList.remove('show')}
+function openCourseModal(slot,day){S.editingSlot=slot;S.editingDay=day;const c=S.courses[slot][day],days=['周一','周二','周三','周四','周五','周六','周日'];$('courseModalTitle').textContent=`${days[day]} 第 ${slot+1} 节`;$('courseNameInput').value=c?.name||'';$('coursePlaceInput').value=c?.place||'';$('courseNoteInput').value=c?.note||'';$('courseDeleteBtn').style.display=c?'block':'none';$('courseModalOverlay').classList.add('show')}
+function closeCourseModal(){$('courseModalOverlay').classList.remove('show')}
+function saveCourse(){const n=$('courseNameInput').value.trim();if(!n){toast('课程名称不能为空');return}S.courses[S.editingSlot][S.editingDay]={name:n,place:$('coursePlaceInput').value.trim(),note:$('courseNoteInput').value.trim()};closeCourseModal();renderCourses()}
+function deleteEditingCourse(){S.courses[S.editingSlot][S.editingDay]=null;closeCourseModal();renderCourses()}
+function generateReport(){const total=Object.values(S.times).reduce((a,b)=>a+b,0),vis=Object.values(S.visits).reduce((a,b)=>a+b,0);$('reportContent').className='';$('reportContent').innerHTML=`<div class="report-card"><div class="report-head">📊 今日生活报告</div><div class="report-body"><div class="report-row"><span>校园时长</span><b class="report-val">${total} min</b></div><div class="report-row"><span>📍 总打卡次数</span><b class="report-val">${vis}</b></div><div class="report-row"><span>🪙 今日金币</span><b class="report-val">${S.dayCoins}</b></div></div></div><div class="report-card"><div class="report-head">区域分布</div><div class="report-body">${Object.entries(ZONES).map(([id,z])=>`<div class="report-row"><span>${z.icon} ${z.name}</span><b class="report-val">${S.times[id]||'--'} min</b></div>`).join('')}</div></div>`;toast('报告生成成功')}
+function openEditProfile(){tempAvatar=U.avatar;setAvatar('editAvatarPreview',U.avatar);$('editNameInput').value=U.nickname;$('editCatNameInput').value=U.catName;$('editOverlay').classList.add('show')}
+function closeEditProfile(){$('editOverlay').classList.remove('show')}
+function saveProfile(){const n=$('editNameInput').value.trim(),c=$('editCatNameInput').value.trim();if(!n||!c){toast('昵称和小猫名字不能为空');return}if(!isImg(tempAvatar)){toast('请上传一张头像照片');return}U.nickname=n;U.catName=c;U.avatar=tempAvatar;closeEditProfile();syncUser();renderCat();toast('资料已更新')}
+function doLogout(){U={loggedIn:false,sid:'',nickname:'',avatar:'',catName:''};tempAvatar='';$('mainApp').classList.remove('show');$('loginScreen').style.display='flex';$('catNameInput').value='';$('step1').classList.remove('hidden');$('step2').classList.add('hidden');$('dot1').classList.add('active');$('dot2').classList.remove('active');setAvatar('avatarPreview','上传')}
+function updateUI(){$('hpF').style.width=S.hp+'%';$('xpF').style.width=S.xp+'%';$('joyF').style.width=S.joy+'%';$('hdrCoins').textContent=S.coins;$('coinsHero').textContent=S.coins;$('todayCoinsHero').textContent='+'+S.dayCoins+' 今日';$('meCoins').textContent=S.coins;$('meLevel').textContent='Lv.'+S.level}
+function showModal(icon,title,msg,coins){$('modalIcon').textContent=icon;$('modalTitle').textContent=title;$('modalMsg').textContent=msg;$('modalCoins').textContent=coins||'';$('modalOverlay').classList.add('show')}
+function closeModal(){$('modalOverlay').classList.remove('show')}
+setInterval(()=>{if(!U.loggedIn)return;renderPetThumb();if($('panel-cat').classList.contains('active'))renderCat()},5000);
+renderCalendar();
+</script>
+</body>
+</html>
